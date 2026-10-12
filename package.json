@@ -1,0 +1,25 @@
+{
+  "name": "fso-bloglist",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/karlmartinlokk/FSO-bloglist#readme",
+  "bugs": {
+    "url": "https://github.com/karlmartinlokk/FSO-bloglist/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlmartinlokk/FSO-bloglist.git"
+  },
+  "license": "MIT",
+  "author": "Karl-Martin Lokk",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0",
+    "mongoose": "^9.11.2"
+  }
+}
