@@ -1,1 +1,1 @@
-# FSO-bloglist
+# Fullstackopen Blog List
