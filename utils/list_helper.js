@@ -8,7 +8,7 @@ const totalLikes = (blogs) => {
   const blogLikes = blogs.map(blog => blog.likes)
   let sum = blogLikes.reduce((x,y) => {
     return x + y
-  })
+  }, 0)
   return sum
 }
 
@@ -21,10 +21,32 @@ const favoriteBlog = (blogs) => {
 const mostBlogs = (blogs) => {
   const authors = blogs.map(blog => blog.author)
   const authorsFrequency = lodash.countBy(authors)
-  for (var key in authorsFrequency) {
+  for (let key in authorsFrequency) {
     if (authorsFrequency.hasOwnProperty(key)) {
       if (authorsFrequency[key] === Math.max(...Object.values(authorsFrequency))) {
-        return key
+        return {
+          author: key,
+          blogs: authorsFrequency[key]
+        }
+      }
+    }
+  }
+}
+
+const mostLikes = (blogs) => {
+  let likeCounts = {}
+  blogs.forEach(blog => {
+    if (likeCounts.hasOwnProperty(blog.author)) {
+      likeCounts[blog.author] = likeCounts[blog.author] + blog.likes
+    } else {
+      likeCounts[blog.author] = blog.likes
+    }
+  })
+  for (const [key, value] of Object.entries(likeCounts)) {
+    if (value === Math.max(...Object.values(likeCounts))) {
+      return {
+        author: key,
+        likes: value
       }
     }
   }
@@ -35,4 +57,5 @@ module.exports = {
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 }

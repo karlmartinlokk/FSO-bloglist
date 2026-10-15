@@ -16,7 +16,11 @@ describe('most blogs', () => {
 
   test('one single blog', () => {
         const result = listHelper.mostBlogs(listWithOneBlog)
-        assert.strictEqual(result, 'Edsger W. Dijkstra')
+        assert.deepStrictEqual(result, 
+            {
+                author: 'Edsger W. Dijkstra',
+                blogs: 1
+            })
     })
 
   const blogs = [
@@ -71,6 +75,10 @@ describe('most blogs', () => {
     ]
     test('multiple blogs', () => {
         const result = listHelper.mostBlogs(blogs)
-        assert.strictEqual(result, "Robert C. Martin")
+        assert.deepStrictEqual(result, 
+            {
+                author: "Robert C. Martin",
+                blogs: 3
+            })
     })
 })
