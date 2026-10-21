@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, describe, after, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -36,7 +36,7 @@ const initialBlogs = [
         _id: "5a422b891b54a676234d17fa",
         title: "First class tests",
         author: "Robert C. Martin",
-        url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
+        url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.html",
         likes: 10,
         __v: 0
     },
@@ -166,6 +166,107 @@ test('url missing', async () => {
     assert.strictEqual(blogsAfter400.length, initialBlogs.length)
 
 })
+
+
+describe('delete blog', () => {
+    test('success', async () => {
+        const id = "5a422bc61b54a676234d17fc"
+        await api
+            .delete(`/api/blogs/${id}`)
+            .expect(204)
+
+        const blogsAfterDeleted = await api.get('/api/blogs')
+        assert.strictEqual(blogsAfterDeleted.body.length, initialBlogs.length - 1)
+    })
+
+    test('failure', async () => {
+        const id ="7a622b3a1b59a676234d17f9"
+        await api
+            .delete(`/api/blogs/${id}`)
+            .expect(404)
+        
+        const blogsAfterDeleted = await api.get('/api/blogs')
+        assert.strictEqual(blogsAfterDeleted.body.length, initialBlogs.length)
+    })
+})
+
+describe('update blog', () => {
+    const originalBlog = initialBlogs[3]
+
+    test('title', async () => {
+        const newBlog = { ...originalBlog, title: "New Title" }
+
+        await api
+            .put(`/api/blogs/${newBlog._id}`)
+            .send(newBlog)
+            .expect(200)
+
+        const blogAfterModify = await api.get(`/api/blogs/${newBlog._id}`)
+        assert.strictEqual(blogAfterModify.body.title, newBlog.title)
+    })
+
+    test('author', async () => {
+        const newBlog = { ...originalBlog, author: "New Author" }
+
+        await api
+            .put(`/api/blogs/${newBlog._id}`)
+            .send(newBlog)
+            .expect(200)
+
+        const blogAfterModify = await api.get(`/api/blogs/${newBlog._id}`)
+        assert.strictEqual(blogAfterModify.body.author, newBlog.author)
+    })
+
+    test('url', async () => {
+        const newBlog = { ...originalBlog, url: "http://example.com/new-url" }
+
+        await api
+            .put(`/api/blogs/${newBlog._id}`)
+            .send(newBlog)
+            .expect(200)
+
+        const blogAfterModify = await api.get(`/api/blogs/${newBlog._id}`)
+        assert.strictEqual(blogAfterModify.body.url, newBlog.url)
+    })
+
+    test('likes', async () => {
+        const newBlog = { ...originalBlog, likes: 42 }
+
+        await api
+            .put(`/api/blogs/${newBlog._id}`)
+            .send(newBlog)
+            .expect(200)
+
+        const blogAfterModify = await api.get(`/api/blogs/${newBlog._id}`)
+        assert.strictEqual(blogAfterModify.body.likes, newBlog.likes)
+    })
+
+    test('nothing changes', async () => {
+        const { _id, __v, ...unchangedBlog } = originalBlog
+
+        await api
+            .put(`/api/blogs/${_id}`)
+            .send(originalBlog)
+            .expect(200)
+
+        const blogAfterModify = await api.get(`/api/blogs/${_id}`)
+        assert.deepStrictEqual(blogAfterModify.body, { ...unchangedBlog, id: _id })
+    })
+
+    test('failure', async () => {
+        const id = "7a622b3a1b59a676234d17f9"
+        const newBlog = { ...originalBlog, author: "New Author" }
+
+        await api
+            .put(`/api/blogs/${id}`)
+            .send(newBlog)
+            .expect(404)
+
+        const blogsAfterUpdate = await Blog.find({})
+        assert.strictEqual(blogsAfterUpdate.length, initialBlogs.length)
+    })
+})
+
 
 after(async () => {
     await mongoose.connection.close()
