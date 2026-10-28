@@ -1,7 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
+const { userExtractor } = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
@@ -17,17 +16,9 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', userExtractor, async (request, response) => {
   const { title, author, url, likes } = request.body
-
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
-   if (!user) {
-    return response.status(400).json({ error: 'userID missing or invalid'})
-  }
+  const user = request.user
 
   if (!title || !url) {
     return response.status(400).end()
@@ -48,25 +39,18 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(savedBlogResponse)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
-   if (!user) {
-    return response.status(400).json({ error: 'userID missing or invalid'})
-  }
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
+  const user = request.user
   const blog = await Blog.findById(request.params.id)
   if (blog) {
     if (blog.user.toString() === user.id.toString()) {
       await Blog.findByIdAndDelete(request.params.id)
       user.blogs = user.blogs.filter(b => b.toString() !== request.params.id)
       await user.save()
-      
+
       return response.status(204).end()
     } else {
-      return response.status(403).json({ error: 'invalid user, cannot delete other users posts'})
+      return response.status(403).json({ error: 'invalid user, cannot delete other users posts' })
     }
   } else {
     return response.status(404).end()

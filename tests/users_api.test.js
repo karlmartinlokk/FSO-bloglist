@@ -40,7 +40,7 @@ describe('initially one user in db', () => {
     assert(usernames.includes(newUser.username))
   })
 
-    test('username already taken, creation fails', async () => {
+  test('username already taken, creation fails', async () => {
     const usersAtStart = await User.find({})
 
     const newUser = {
@@ -129,5 +129,5 @@ describe('initially one user in db', () => {
 })
 
 after(async () => {
-    await mongoose.connection.close()
+  await mongoose.connection.close()
 })

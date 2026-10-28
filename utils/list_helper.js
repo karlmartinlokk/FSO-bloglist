@@ -1,6 +1,6 @@
 const lodash = require('lodash')
 
-const dummy = (blogs) => {
+const dummy = () => {
   return 1
 }
 
@@ -22,7 +22,7 @@ const mostBlogs = (blogs) => {
   const authors = blogs.map(blog => blog.author)
   const authorsFrequency = lodash.countBy(authors)
   for (let key in authorsFrequency) {
-    if (authorsFrequency.hasOwnProperty(key)) {
+    if (Object.hasOwn(authorsFrequency, key)) {
       if (authorsFrequency[key] === Math.max(...Object.values(authorsFrequency))) {
         return {
           author: key,
@@ -36,7 +36,7 @@ const mostBlogs = (blogs) => {
 const mostLikes = (blogs) => {
   let likeCounts = {}
   blogs.forEach(blog => {
-    if (likeCounts.hasOwnProperty(blog.author)) {
+    if (Object.hasOwn(likeCounts, blog.author)) {
       likeCounts[blog.author] = likeCounts[blog.author] + blog.likes
     } else {
       likeCounts[blog.author] = blog.likes

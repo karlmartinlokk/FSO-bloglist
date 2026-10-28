@@ -11,13 +11,13 @@ usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
 
   if (!username) {
-    return response.status(400).json({ error: 'missing username'})
+    return response.status(400).json({ error: 'missing username' })
   } else if (!password) {
-    return response.status(400).json({ error: 'missing password'})
+    return response.status(400).json({ error: 'missing password' })
   } else if (username.length < 3) {
-    return response.status(400).json({ error: 'username too short'})
+    return response.status(400).json({ error: 'username too short' })
   } else if (password.length < 3) {
-    return response.status(400).json({ error: 'password too short'})
+    return response.status(400).json({ error: 'password too short' })
   }
 
   const saltRounds = 10
