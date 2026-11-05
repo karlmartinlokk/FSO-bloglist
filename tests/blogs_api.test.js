@@ -173,7 +173,10 @@ test('blog post successful', async () => {
   const newBlogResponse = await api
     .get(`/api/blogs/${savedBlog.id}`)
     .expect(200)
-  assert.deepStrictEqual(newBlogResponse.body, { ...newBlog, id: savedBlog.id }) /* spread makes a new object with same props as newBlog with id added */
+  assert.deepStrictEqual(
+    { ...newBlogResponse.body, user: newBlogResponse.body.user.id },
+    { ...newBlog, id: savedBlog.id }
+  ) /* spread makes a new object with same props as newBlog with id added */
 })
 
 
@@ -321,7 +324,10 @@ describe('update blog', () => {
       .expect(200)
 
     const blogAfterModify = await api.get(`/api/blogs/${_id}`)
-    assert.deepStrictEqual(blogAfterModify.body, { ...unchangedBlog, id: _id })
+    assert.deepStrictEqual(
+      { ...blogAfterModify.body, user: blogAfterModify.body.user.id },
+      { ...unchangedBlog, id: _id }
+    )
   })
 
   test('failure', async () => {
